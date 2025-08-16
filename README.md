@@ -55,8 +55,8 @@ gin-assistant2 run [port]
 Examples:
 ```bash
 gin-assistant2 run          # Runs on port 8080
-gin-assistant2 run 3000     # Runs on port 3000
-gin-assistant2 run 8000     # Runs on port 8000
+gin-assistant2 run 7000     # Runs on port 7000
+gin-assistant2 run 9999     # Runs on port 9999
 ```
 
 **Port Requirements:**
