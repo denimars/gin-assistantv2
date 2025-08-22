@@ -124,8 +124,9 @@ func Service(dir string, serviceName string) {
 	dirService := fmt.Sprintf("%s/app/service", dir)
 	finalDir := fmt.Sprintf("%s/%s", dirService, serviceName)
 	checkError(helper.CreateDirectory(helper.Path(finalDir)))
-	checkError(helper.CreateFile(finalDir, "repository.go", strings.TrimSpace(code.Repository(serviceName))))
-	checkError(helper.CreateFile(finalDir, "service.go", strings.TrimSpace(code.Service(serviceName))))
-	checkError(helper.CreateFile(finalDir, "router.go", strings.TrimSpace(code.Router(serviceName))))
+	packageName := helper.ClearPackageName(serviceName)
+	checkError(helper.CreateFile(finalDir, "repository.go", strings.TrimSpace(code.Repository(packageName))))
+	checkError(helper.CreateFile(finalDir, "service.go", strings.TrimSpace(code.Service(packageName))))
+	checkError(helper.CreateFile(finalDir, "router.go", strings.TrimSpace(code.Router(packageName))))
 
 }
