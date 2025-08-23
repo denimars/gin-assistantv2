@@ -24,7 +24,7 @@ const (
 	usageInit    = "gin-assistant2 init"
 	usageService = "gin-assistant2 service <service_name>"
 	usageRun     = "gin-assistant2 run [port]"
-	usageHelp    = "gin-assistant2 [init|service|run|help]"
+	usageHelp    = "gin-assistant2 [init|service|auth|run|help]"
 )
 
 var serverPort string
@@ -74,6 +74,12 @@ func handleInitCommand(projectDir string) {
 	fmt.Println("Initializing project...")
 	command.InitProject(projectDir)
 	fmt.Println("Project initialized successfully!")
+}
+
+func handleAuthCommand(projectDir string) {
+	fmt.Println("Creating auth middleware...")
+	command.Middleware(projectDir)
+	fmt.Println("Auth middleware created successfully!")
 }
 
 func handleServiceCommand(args []string, projectDir string) error {
@@ -156,6 +162,7 @@ func showHelp() {
 	fmt.Println()
 	fmt.Println("Commands:")
 	fmt.Println("  init     Initialize a new Gin project in current directory")
+	fmt.Println("  auth     Generate a new auth")
 	fmt.Println("  service  Generate a new service with repository, service and router files")
 	fmt.Println("  run      Start development server with hot reload")
 	fmt.Println("  help     Show this help message")
@@ -307,6 +314,8 @@ func main() {
 			fmt.Printf("Error: %v\n", err)
 			os.Exit(1)
 		}
+	case "auth":
+		handleAuthCommand(projectDir)
 	case "help", "-h", "--help":
 		showHelp()
 	case "run":

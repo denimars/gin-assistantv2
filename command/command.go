@@ -71,7 +71,7 @@ func getDirectoryConfig() []DirectoryConfig {
 		{
 			Name: "helper",
 			Files: []FileConfig{
-				{Name: "helper.go", Content: code.Helper},
+				{Name: "helper.go", Content: code.Response},
 			},
 		},
 		{
@@ -129,4 +129,52 @@ func Service(dir string, serviceName string) {
 	checkError(helper.CreateFile(finalDir, "service.go", strings.TrimSpace(code.Service(packageName))))
 	checkError(helper.CreateFile(finalDir, "router.go", strings.TrimSpace(code.Router(packageName))))
 
+}
+
+func createModel(dir string) {
+	projectName := helper.GetProjectName(dir)
+	location := fmt.Sprintf("%s/app/model", dir)
+	if _, err := os.Stat(helper.Path(location)); os.IsNotExist(err) {
+		checkError(helper.CreateDirectory(location))
+	}
+	checkError(helper.CreateFile(location, "base.go", strings.TrimSpace(code.BaseModel(projectName))))
+	checkError(helper.CreateFile(location, "blacklisttoken.go", strings.TrimSpace(code.ModelBlackListToken())))
+	addBlackListToken := helper.ReadFile("db.AutoMigrate(", "db.AutoMigrate(\n  model.BlackListToken{},", false, fmt.Sprintf("%s/app/db/connection.go", dir))
+	helper.ReWriteFile(fmt.Sprintf("%s/app/db/connection.go", dir), addBlackListToken)
+	addImportFile := helper.ReadFile("import (", "import (\n  \""+projectName+"/app/model\"", false, fmt.Sprintf("%s/app/db/connection.go", dir))
+	helper.ReWriteFile(fmt.Sprintf("%s/app/db/connection.go", dir), addImportFile)
+
+}
+
+func createMiddleware(dir string) {
+	projectName := helper.GetProjectName(dir)
+	location := fmt.Sprintf("%s/app/middleware", dir)
+	if _, err := os.Stat(helper.Path(location)); os.IsNotExist(err) {
+		checkError(helper.CreateDirectory(location))
+	}
+	checkError(helper.CreateFile(fmt.Sprintf("%s/app/middleware", dir), "response.go", strings.TrimSpace(code.MiddlewareResponse())))
+	checkError(helper.CreateFile(fmt.Sprintf("%s/app/middleware", dir), "service.go", strings.TrimSpace(code.MiddlewareService(projectName))))
+}
+
+func createRepoBlackListToken(dir string) {
+	projectName := helper.GetProjectName(dir)
+	location := fmt.Sprintf("%s/app/helper/blacklisttoken", dir)
+	if _, err := os.Stat(helper.Path(location)); os.IsNotExist(err) {
+		checkError(helper.CreateDirectory(location))
+	}
+	checkError(helper.CreateFile(location, "repository.go", strings.TrimSpace(code.RepoBlackListToken(projectName))))
+}
+
+func createHashPassword(dir string) {
+	location := fmt.Sprintf("%s/app/helper", dir)
+	checkError(helper.CreateFile(location, "hashpassword.go", strings.TrimSpace(code.HashPassword())))
+	checkError(helper.CreateFile(location, "token.go", strings.TrimSpace(code.Token())))
+	checkError(helper.CreateFile(location, "timehelper.go", strings.TrimSpace(code.TimeHelper())))
+}
+
+func Middleware(dir string) {
+	createModel(dir)
+	createMiddleware(dir)
+	createRepoBlackListToken(dir)
+	createHashPassword(dir)
 }

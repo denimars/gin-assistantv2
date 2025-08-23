@@ -1,6 +1,6 @@
 package code
 
-func Helper() string {
+func Response() string {
 	return `
 package helper
 

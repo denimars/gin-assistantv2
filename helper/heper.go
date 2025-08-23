@@ -75,7 +75,7 @@ func CreateDirectory(path string) error {
 	return err
 }
 
-func reWriteFile(dir string, content []string) error {
+func ReWriteFile(dir string, content []string) error {
 	connection, err := os.Create(dir)
 	if err != nil {
 		return err
@@ -91,7 +91,7 @@ func reWriteFile(dir string, content []string) error {
 	return nil
 }
 
-func readFile(searchFile string, fixedFile string, isALl bool, directory string) []string {
+func ReadFile(searchFile string, fixedFile string, isALl bool, directory string) []string {
 	var result []string
 	file, err := os.Open(directory)
 	if err != nil {
@@ -120,7 +120,7 @@ func readFile(searchFile string, fixedFile string, isALl bool, directory string)
 func Port(port string, directory string) {
 	dir := Path(fmt.Sprintf("%v/app/run.go", directory))
 	newPort := fmt.Sprintf("port := \"%v\"", port)
-	addPort := readFile("port := \"", newPort, true, dir)
-	reWriteFile(dir, addPort)
+	addPort := ReadFile("port := \"", newPort, true, dir)
+	ReWriteFile(dir, addPort)
 
 }
