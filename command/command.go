@@ -108,13 +108,11 @@ func InitProject(dir string) {
 	if _, err := os.Stat(helper.Path(appDir)); os.IsNotExist(err) {
 		initProject(projectName)
 		installPackage()
-
 		checkError(helper.CreateDirectory(helper.Path(appDir)))
 		checkError(helper.CreateFile(appDir, "run.go", strings.TrimSpace(code.Run())))
-
 		createDirectoriesAndFiles(appDir, getDirectoryConfig())
-
 		checkError(helper.CreateFile(dir, "main.go", strings.TrimSpace(code.Main(projectName))))
+		createModel(dir)
 	} else {
 		fmt.Println("folder app exist...")
 	}
@@ -138,17 +136,17 @@ func createModel(dir string) {
 		checkError(helper.CreateDirectory(location))
 	}
 	checkError(helper.CreateFile(location, "base.go", strings.TrimSpace(code.BaseModel(projectName))))
+}
+
+func createMiddleware(dir string) {
+	projectName := helper.GetProjectName(dir)
+	location := fmt.Sprintf("%s/app/model", dir)
 	checkError(helper.CreateFile(location, "blacklisttoken.go", strings.TrimSpace(code.ModelBlackListToken())))
 	addBlackListToken := helper.ReadFile("db.AutoMigrate(", "db.AutoMigrate(\n  model.BlackListToken{},", false, fmt.Sprintf("%s/app/db/connection.go", dir))
 	helper.ReWriteFile(fmt.Sprintf("%s/app/db/connection.go", dir), addBlackListToken)
 	addImportFile := helper.ReadFile("import (", "import (\n  \""+projectName+"/app/model\"", false, fmt.Sprintf("%s/app/db/connection.go", dir))
 	helper.ReWriteFile(fmt.Sprintf("%s/app/db/connection.go", dir), addImportFile)
-
-}
-
-func createMiddleware(dir string) {
-	projectName := helper.GetProjectName(dir)
-	location := fmt.Sprintf("%s/app/middleware", dir)
+	location = fmt.Sprintf("%s/app/middleware", dir)
 	if _, err := os.Stat(helper.Path(location)); os.IsNotExist(err) {
 		checkError(helper.CreateDirectory(location))
 	}
@@ -173,7 +171,6 @@ func createHashPassword(dir string) {
 }
 
 func Middleware(dir string) {
-	createModel(dir)
 	createMiddleware(dir)
 	createRepoBlackListToken(dir)
 	createHashPassword(dir)
